@@ -170,10 +170,10 @@ describe Script::Layers::Infrastructure::Languages::AssemblyScriptTaskRunner do
                   "version" => "1.3.7",
                 },
               },
-            }.to_json, 
-            cmd: cmd)
-          )
-          assert_equal "1.3.7", subject
+            }.to_json,
+            cmd: cmd
+          ))
+        assert_equal "1.3.7", subject
       end
     end
   end

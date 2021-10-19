@@ -48,18 +48,18 @@ module Script
           end
 
           def library_version(library_name)
+            output = JSON.parse(CommandRunner.new(ctx: ctx).call("npm list --json"))
+            raise Errors::APILibraryNotFoundError.new(library_name),
+              output unless output["dependencies"][library_name]
+            output["dependencies"][library_name]["version"]
+          rescue Errors::SystemCallFailureError => e
             begin
-              output = JSON.parse(CommandRunner.new(ctx: ctx).call("npm list --json"))
-              raise Errors::APILibraryNotFoundError.new(library_name), output unless output["dependencies"][library_name]
+              output = JSON.parse(e.out)
+              raise Errors::APILibraryNotFoundError.new(library_name),
+                output unless output["dependencies"][library_name]
               output["dependencies"][library_name]["version"]
-            rescue Errors::SystemCallFailureError => e
-              begin
-                output = JSON.parse(e.out)
-                raise Errors::APILibraryNotFoundError.new(library_name), output unless output["dependencies"][library_name]
-                output["dependencies"][library_name]["version"]
-              rescue JSON::ParserError
-                raise e
-              end           
+            rescue JSON::ParserError
+              raise e
             end
           end
 
